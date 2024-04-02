@@ -5,10 +5,14 @@ fn main() {
         println!("Problem parsing arguments: {err}");
         process::exit(1);
     });
+    run(config)
+    // println!("Searching for {} in {}", config.query, config.file_path);
+}
+
+fn run(config: Config) {
     println!("Searching for {}", config.query);
     println!("In file {}", config.file_path);
     fs::read_to_string(config.file_path).expect("should have been able to read the file");
-    // println!("Searching for {} in {}", config.query, config.file_path);
 }
 
 struct Config {
