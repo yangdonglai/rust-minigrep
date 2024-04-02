@@ -5,31 +5,29 @@ fn main() {
         println!("Problem parsing arguments: {err}");
         process::exit(1);
     });
-    run(config)
+    run(&config)
     // println!("Searching for {} in {}", config.query, config.file_path);
 }
 
-fn run(config: Config) {
+fn run(config: &Config) {
     println!("Searching for {}", config.query);
     println!("In file {}", config.file_path);
     fs::read_to_string(config.file_path).expect("should have been able to read the file");
 }
 
-struct Config {
-    query: String,
-    file_path: String,
+struct Config<'a> {
+    query: &'a String,
+    file_path: &'a String,
 }
 
-impl Config {
+impl<'a> Config<'a> {
     fn build(args: &[String]) -> Result<Config, &'static str> {
         if args.len() < 3 {
             return Err("not enough arguments");
         }
-        let query = args[1].clone();
-        let file_path = args[2].clone();
         Ok(Config {
-            query: query,
-            file_path: file_path,
+            query: &args[1],
+            file_path: &args[2],
         })
     }
 }
