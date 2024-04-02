@@ -1,15 +1,31 @@
-use std::env;
-use std::fs;
+use std::{env, fs, process};
 fn main() {
     let args: Vec<String> = env::args().collect();
-    dbg!(&args);
-    let query1 = args.get(1);
-    let file_path = args.get(2);
-    println!(
-        "Searching for {} in {}",
-        query1.unwrap(),
-        file_path.unwrap()
-    );
-    println!("{file_path} should exist");
-    let _contents = fs::read_to_string(file_path.unwrap()).expect("{file_path} should exist");
+    let config = Config::build(&args).unwrap_or_else(|err| {
+        println!("Problem parsing arguments: {err}");
+        process::exit(1);
+    });
+    println!("Searching for {}", config.query);
+    println!("In file {}", config.file_path);
+    fs::read_to_string(config.file_path).expect("should have been able to read the file");
+    // println!("Searching for {} in {}", config.query, config.file_path);
+}
+
+struct Config {
+    query: String,
+    file_path: String,
+}
+
+impl Config {
+    fn build(args: &[String]) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            return Err("not enough arguments");
+        }
+        let query = args[1].clone();
+        let file_path = args[2].clone();
+        Ok(Config {
+            query: query,
+            file_path: file_path,
+        })
+    }
 }
